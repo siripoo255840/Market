@@ -1,0 +1,151 @@
+
+ import type { Metadata, Viewport } from 'next'
+ import { Geist, Geist_Mono } from 'next/font/google'
+ import './globals.css'
+ 
+ const geistSans = Geist({
+   variable: '--font-geist-sans',
+   subsets: ['latin']
+ })
+ 
+ const geistMono = Geist_Mono({
+   variable: '--font-geist-mono',
+   subsets: ['latin']
+ })
+ 
+ export const metadata: Metadata = {
+   title: {
+     default: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+     template: '%s | ThaiMarket'
+   },
+   description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย',
+   keywords: [
+     'อีคอมเมิร์ซ',
+     'ขายสินค้าออนไลน์',
+     'marketplace',
+     'ไทยมาร์เก็ต',
+     'ThaiMarket',
+     'E-commerce Thailand',
+     'Online Shopping'
+   ],
+   authors: [{ 
+     name: 'ThaiMarket Team',
+     url: 'https://thaimarket.co'
+   }],
+   creator: 'ThaiMarket Co., Ltd.',
+   publisher: 'ThaiMarket Co., Ltd.',
+   applicationName: 'ThaiMarket',
+   generator: 'Next.js',
+   metadataBase: new URL('https://thaimarket.co'),
+   alternates: {
+     canonical: '/',
+     languages: {
+       'th-th': '/th',
+       'en-us': '/en',
+     },
+   },
+   formatDetection: {
+     telephone: true,
+     date: true,
+     address: true,
+     email: true,
+     url: true
+   },
+   openGraph: {
+     type: 'website',
+     locale: 'th_TH',
+     url: 'https://thaimarket.co',
+     siteName: 'ThaiMarket',
+     title: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+     description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย',
+     images: [
+       {
+         url: '/og-image.jpg',
+         width: 1200,
+         height: 630,
+         alt: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+       },
+     ],
+   },
+   twitter: {
+     card: 'summary_large_image',
+     title: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+     description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย',
+     images: ['/og-image.jpg'],
+     creator: '@ThaiMarket',
+   },
+   icons: {
+     icon: [
+       { url: '/favicon.ico' },
+       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+     ],
+     apple: [
+       { url: '/apple-touch-icon.png' },
+       { url: '/apple-touch-icon-152x152.png', sizes: '152x152', type: 'image/png' },
+     ],
+     other: [
+       {
+         rel: 'mask-icon',
+         url: '/safari-pinned-tab.svg',
+         color: '#5bbad5',
+       },
+     ],
+   },
+   manifest: '/manifest.webmanifest',
+   appleWebApp: {
+     title: 'ThaiMarket',
+     statusBarStyle: 'black-translucent',
+     capable: true,
+   },
+ }
+ 
+ export const viewport: Viewport = {
+   width: 'device-width',
+   initialScale: 1,
+   maximumScale: 5,
+   userScalable: true,
+   themeColor: [
+     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+     { media: '(prefers-color-scheme: dark)', color: '#121212' }
+   ],
+   colorScheme: 'light dark',
+   viewportFit: 'cover'
+ }
+ 
+ export default function RootLayout({
+   children
+ }: Readonly<{
+   children: React.ReactNode
+ }>) {
+   return (
+     <html lang="th-th" className="dark" dir="ltr">
+       <head>
+         <meta name="application-name" content="ThaiMarket" />
+         <meta name="apple-mobile-web-app-capable" content="yes" />
+         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+         <meta name="apple-mobile-web-app-title" content="ThaiMarket" />
+         <meta name="mobile-web-app-capable" content="yes" />
+         <meta name="msapplication-TileColor" content="#121212" />
+         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+         <meta name="msapplication-config" content="/browserconfig.xml" />
+         <meta name="msapplication-tap-highlight" content="no" />
+         
+         {/* Favicon Links */}
+         <link rel="shortcut icon" href="/favicon.ico" />
+         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+         <link rel="manifest" href="/manifest.webmanifest" />
+         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+         
+         {/* PWA Theme Color */}
+         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+         <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+       </head>
+       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
+         {children}
+       </body>
+     </html>
+   )
+ }   
