@@ -1,0 +1,292 @@
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin']
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin']
+})
+
+export const metadata: Metadata = {
+  title: {
+    default: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+    template: '%s | ThaiMarket'
+  },
+  description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย อำนวยความสะดวกทุกการซื้อขายออนไลน์',
+  keywords: [
+    'อีคอมเมิร์ซไทย',
+    'ขายสินค้าออนไลน์',
+    'marketplace ไทย',
+    'ไทยมาร์เก็ต',
+    'ThaiMarket',
+    'ซื้อของออนไลน์',
+    'ขายของออนไลน์',
+    'E-commerce Thailand',
+    'Online Shopping'
+  ],
+  metadataBase: new URL('https://thaimarket.co'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'th-th': '/th',
+      'en-us': '/en',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'th_TH',
+    url: 'https://thaimarket.co',
+    siteName: 'ThaiMarket',
+    title: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+    description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร',
+    description: 'แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย',
+    images: ['/images/og-image.jpg'],
+    creator: '@ThaiMarket',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png' },
+      { url: '/apple-touch-icon-152x152.png', sizes: '152x152', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/safari-pinned-tab.svg',
+        color: '#5bbad5',
+      },
+    ],
+  },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    title: 'ThaiMarket',
+    statusBarStyle: 'black-translucent',
+    capable: true,
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#121212' }
+  ],
+  colorScheme: 'light dark',
+  viewportFit: 'cover'
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="th-th" className="dark" dir="ltr">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="application-name" content="ThaiMarket" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="ThaiMarket" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#121212" />
+        <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        
+        {/* Favicon Links */}
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        
+        {/* PWA Theme Color */}
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
+        {children}
+      </body>
+    </html>
+  )
+}
+'use client'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { ShoppingCart, Search, User, Menu, Home, Tag, Star, Gift } from 'lucide-react'
+import Link from 'next/link'
+import Head from 'next/head'
+
+export default function HomePage() {
+  return (
+    <>
+      <Head>
+        {/* Additional meta tags for this specific page */}
+        <meta property="og:url" content="https://thaimarket.co/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร" />
+        <meta property="og:description" content="แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย" />
+        <meta property="og:image" content="https://thaimarket.co/images/og-image.jpg" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ThaiMarket - แพลตฟอร์มอีคอมเมิร์ซครบวงจร" />
+        <meta name="twitter:description" content="แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย" />
+        <meta name="twitter:image" content="https://thaimarket.co/images/og-image.jpg" />
+      </Head>
+
+      <div className="flex flex-col min-h-screen">
+        {/* Header with improved accessibility */}
+        <header className="sticky top-0 z-50 bg-background border-b">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <div className="flex items-center">
+                <Link href="/" className="text-2xl font-bold text-primary">
+                  ThaiMarket
+                </Link>
+              </div>
+
+              {/* Search Bar - Hidden on mobile */}
+              <div className="hidden md:flex flex-1 mx-6">
+                <div className="relative w-full max-w-2xl">
+                  <input
+                    type="text"
+                    placeholder="ค้นหาสินค้า..."
+                    className="w-full py-2 px-4 pr-10 rounded-full border border-input bg-background"
+                    aria-label="ค้นหาสินค้า"
+                  />
+                  <button 
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    aria-label="ค้นหา"
+                  >
+                    <Search className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Icons */}
+              <div className="flex items-center space-x-4">
+                <Link href="/cart" className="relative" aria-label="ตะกร้าสินค้า">
+                  <ShoppingCart className="h-6 w-6" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-xs w-4 h-4 flex items-center justify-center">
+                    0
+                  </span>
+                </Link>
+                <Link href="/account" aria-label="บัญชีผู้ใช้">
+                  <User className="h-6 w-6" />
+                </Link>
+                <button 
+                  className="md:hidden"
+                  aria-label="เมนู"
+                >
+                  <Menu className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Search Bar */}
+            <div className="mt-3 md:hidden">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="ค้นหาสินค้า..."
+                  className="w-full py-2 px-4 pr-10 rounded-full border border-input bg-background"
+                  aria-label="ค้นหาสินค้า"
+                />
+                <button 
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  aria-label="ค้นหา"
+                >
+                  <Search className="h-5 w-5 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+
+            {/* Category Navigation */}
+            <nav className="hidden md:flex items-center space-x-6 mt-3" aria-label="เมนูหลัก">
+              <Link href="/categories" className="text-sm hover:text-primary">
+                หมวดหมู่ทั้งหมด
+              </Link>
+              <Link href="/categories/electronics" className="text-sm hover:text-primary">
+                อิเล็กทรอนิกส์
+              </Link>
+              <Link href="/categories/fashion" className="text-sm hover:text-primary">
+                แฟชั่น
+              </Link>
+              <Link href="/categories/home" className="text-sm hover:text-primary">
+                บ้านและสวน
+              </Link>
+              <Link href="/categories/beauty" className="text-sm hover:text-primary">
+                ความงาม
+              </Link>
+              <Link href="/categories/food" className="text-sm hover:text-primary">
+                อาหารและเครื่องดื่ม
+              </Link>
+            </nav>
+          </div>
+        </header>
+
+        {/* Rest of your existing code remains the same */}
+        {/* ... */}
+      </div>
+    </>
+  )
+}
+{
+  "name": "ThaiMarket",
+  "short_name": "ThaiMarket",
+  "description": "แพลตฟอร์มอีคอมเมิร์ซครบวงจรสำหรับผู้ซื้อและผู้ขายในประเทศไทย",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/mstile-70x70.png"/>
+      <square150x150logo src="/mstile-150x150.png"/>
+      <square310x310logo src="/mstile-310x310.png"/>
+      <TileColor>#121212</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>
