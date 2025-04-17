@@ -1,0 +1,202 @@
+'use client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState } from 'react'
+import Link from 'next/link'
+import { mockLogin, setAuthCookie } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from '@/components/ui/use-toast'
+import Head from 'next/head'
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      const result = await mockLogin(email, password)
+      
+      if (result.success && result.token) {
+        setAuthCookie(result.token)
+        toast({
+          title: 'เข้าสู่ระบบสำเร็จ',
+          description: 'ยินดีต้อนรับกลับมา',
+          variant: 'default',
+        })
+        router.push('/account')
+      } else {
+        toast({
+          title: 'เข้าสู่ระบบไม่สำเร็จ',
+          description: result.error || 'กรุณาตรวจสอบอีเมลและรหัสผ่าน',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถเข้าสู่ระบบได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <Head>
+        <title>เข้าสู่ระบบ | ThaiMarket</title>
+        <meta name="description" content="เข้าสู่ระบบบัญชี ThaiMarket เพื่อจัดการร้านค้าและสั่งซื้อสินค้า" />
+        <meta name="keywords" content="เข้าสู่ระบบ, ThaiMarket, อีคอมเมิร์ซ, ล็อกอิน" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://thaimarket.co/auth/login" />
+        <meta property="og:title" content="เข้าสู่ระบบ | ThaiMarket" />
+        <meta property="og:description" content="เข้าสู่ระบบบัญชี ThaiMarket เพื่อจัดการร้านค้าและสั่งซื้อสินค้า" />
+        <meta property="og:image" content="https://thaimarket.co/images/auth-og-image.jpg" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://thaimarket.co/auth/login" />
+        <meta property="twitter:title" content="เข้าสู่ระบบ | ThaiMarket" />
+        <meta property="twitter:description" content="เข้าสู่ระบบบัญชี ThaiMarket เพื่อจัดการร้านค้าและสั่งซื้อสินค้า" />
+        <meta property="twitter:image" content="https://thaimarket.co/images/auth-og-image.jpg" />
+        
+        {/* Favicon Links */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
+
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">เข้าสู่ระบบ</CardTitle>
+            <CardDescription>เข้าสู่ระบบเพื่อจัดการบัญชีของคุณ</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">อีเมล</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-label="อีเมล"
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">รหัสผ่าน</Label>
+                  <Link 
+                    href="/auth/forgot-password" 
+                    className="text-sm text-primary hover:underline"
+                    aria-label="ลืมรหัสผ่าน"
+                  >
+                    ลืมรหัสผ่าน?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-label="รหัสผ่าน"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading}
+                aria-label={isLoading ? 'กำลังเข้าสู่ระบบ' : 'เข้าสู่ระบบ'}
+              >
+                {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+              </Button>
+              <div className="text-center text-sm">
+                ยังไม่มีบัญชี?{' '}
+                <Link 
+                  href="/auth/register" 
+                  className="text-primary hover:underline"
+                  aria-label="สมัครสมาชิก"
+                >
+                  สมัครสมาชิก
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
+    </>
+  )
+}
+// Add this state
+const [showPassword, setShowPassword] = useState(false)
+
+// Update password input
+<Input
+  id="password"
+  type={showPassword ? "text" : "password"}
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  required
+  aria-required="true"
+  aria-label="รหัสผ่าน"
+/>
+
+// Add toggle button
+<button 
+  type="button" 
+  onClick={() => setShowPassword(!showPassword)}
+  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+  aria-label={showPassword ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'}
+>
+  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+</button>
+// Add validation state
+const [errors, setErrors] = useState({ email: '', password: '' })
+
+// Add validation function
+const validateForm = () => {
+  const newErrors = { email: '', password: '' }
+  let isValid = true
+
+  if (!email.includes('@')) {
+    newErrors.email = 'กรุณากรอกอีเมลให้ถูกต้อง'
+    isValid = false
+  }
+
+  if (password.length < 6) {
+    newErrors.password = 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'
+    isValid = false
+  }
+
+  setErrors(newErrors)
+  return isValid
+}
+
+// Update submit handler
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  if (!validateForm()) return
+  // rest of the code
+}
