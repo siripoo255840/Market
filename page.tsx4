@@ -1,0 +1,329 @@
+'use client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useState } from 'react'
+import Link from 'next/link'
+import { mockRegister, setAuthCookie } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from '@/components/ui/use-toast'
+import Head from 'next/head'
+
+export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    confirmPassword: '',
+    agreeTerms: false
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const router = useRouter()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    })
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = {...prev}
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.firstName.trim()) newErrors.firstName = 'กรุณากรอกชื่อ'
+    if (!formData.lastName.trim()) newErrors.lastName = 'กรุณากรอกนามสกุล'
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'กรุณากรอกอีเมล'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'รูปแบบอีเมลไม่ถูกต้อง'
+    }
+    
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'กรุณากรอกเบอร์โทรศัพท์'
+    } else if (!/^\d{9,10}$/.test(formData.phoneNumber.replace(/[- ]/g, ''))) {
+      newErrors.phoneNumber = 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง'
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'กรุณากรอกรหัสผ่าน'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร'
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'รหัสผ่านไม่ตรงกัน'
+    }
+    
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = 'กรุณายอมรับข้อตกลงและเงื่อนไข'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!validate()) return
+    
+    setIsLoading(true)
+    
+    try {
+      const result = await mockRegister({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phoneNumber
+      })
+      
+      if (result.success && result.token) {
+        setAuthCookie(result.token)
+        toast({
+          title: 'ลงทะเบียนสำเร็จ',
+          description: 'ยินดีต้อนรับสู่ ThaiMarket',
+          variant: 'default',
+        })
+        router.push('/account')
+      } else {
+        toast({
+          title: 'ลงทะเบียนไม่สำเร็จ',
+          description: result.error || 'กรุณาตรวจสอบข้อมูลและลองใหม่อีกครั้ง',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถลงทะเบียนได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <Head>
+        <title>สมัครสมาชิก | ThaiMarket</title>
+        <meta name="description" content="สร้างบัญชีใหม่บน ThaiMarket เพื่อเริ่มซื้อขายสินค้าออนไลน์" />
+        <meta name="keywords" content="สมัครสมาชิก, ThaiMarket, ลงทะเบียน, อีคอมเมิร์ซ" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://thaimarket.co/auth/register" />
+        <meta property="og:title" content="สมัครสมาชิก | ThaiMarket" />
+        <meta property="og:description" content="สร้างบัญชีใหม่บน ThaiMarket เพื่อเริ่มซื้อขายสินค้าออนไลน์" />
+        <meta property="og:image" content="https://thaimarket.co/images/register-og-image.jpg" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://thaimarket.co/auth/register" />
+        <meta property="twitter:title" content="สมัครสมาชิก | ThaiMarket" />
+        <meta property="twitter:description" content="สร้างบัญชีใหม่บน ThaiMarket เพื่อเริ่มซื้อขายสินค้าออนไลน์" />
+        <meta property="twitter:image" content="https://thaimarket.co/images/register-og-image.jpg" />
+        
+        {/* Favicon Links */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
+
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">สมัครสมาชิก</CardTitle>
+            <CardDescription>สร้างบัญชีใหม่เพื่อเริ่มใช้งาน ThaiMarket</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit} noValidate>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">ชื่อ</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className={errors.firstName ? 'border-red-500' : ''}
+                    aria-invalid={!!errors.firstName}
+                    aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+                  />
+                  {errors.firstName && (
+                    <p id="firstName-error" className="text-sm text-red-500">
+                      {errors.firstName}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">นามสกุล</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className={errors.lastName ? 'border-red-500' : ''}
+                    aria-invalid={!!errors.lastName}
+                    aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+                  />
+                  {errors.lastName && (
+                    <p id="lastName-error" className="text-sm text-red-500">
+                      {errors.lastName}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">อีเมล</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? 'border-red-500' : ''}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                />
+                {errors.email && (
+                  <p id="email-error" className="text-sm text-red-500">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">เบอร์โทรศัพท์</Label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className={errors.phoneNumber ? 'border-red-500' : ''}
+                  aria-invalid={!!errors.phoneNumber}
+                  aria-describedby={errors.phoneNumber ? 'phoneNumber-error' : undefined}
+                />
+                {errors.phoneNumber && (
+                  <p id="phoneNumber-error" className="text-sm text-red-500">
+                    {errors.phoneNumber}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">รหัสผ่าน</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={errors.password ? 'border-red-500' : ''}
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? 'password-error' : undefined}
+                />
+                {errors.password && (
+                  <p id="password-error" className="text-sm text-red-500">
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={errors.confirmPassword ? 'border-red-500' : ''}
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+                />
+                {errors.confirmPassword && (
+                  <p id="confirmPassword-error" className="text-sm text-red-500">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+              
+              <div className="flex items-start space-x-2">
+                <Checkbox 
+                  id="agreeTerms" 
+                  name="agreeTerms" 
+                  checked={formData.agreeTerms}
+                  onCheckedChange={(checked) => {
+                    setFormData({...formData, agreeTerms: checked as boolean})
+                    if (errors.agreeTerms) {
+                      setErrors(prev => {
+                        const newErrors = {...prev}
+                        delete newErrors.agreeTerms
+                        return newErrors
+                      })
+                    }
+                  }}
+                  className="mt-1"
+                  aria-invalid={!!errors.agreeTerms}
+                />
+                <div>
+                  <label
+                    htmlFor="agreeTerms"
+                    className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                      errors.agreeTerms ? 'text-red-500' : ''
+                    }`}
+                  >
+                    ฉันยอมรับ <Link href="/terms" className="text-primary hover:underline">ข้อตกลงและเงื่อนไข</Link>
+                  </label>
+                  {errors.agreeTerms && (
+                    <p id="agreeTerms-error" className="text-sm text-red-500">
+                      {errors.agreeTerms}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading}
+                aria-label={isLoading ? 'กำลังสมัครสมาชิก' : 'สมัครสมาชิก'}
+              >
+                {isLoading ? 'กำลังสมัครสมาชิก...' : 'สมัครสมาชิก'}
+              </Button>
+              <div className="text-center text-sm">
+                มีบัญชีอยู่แล้ว?{' '}
+                <Link href="/auth/login" className="text-primary hover:underline" aria-label="เข้าสู่ระบบ">
+                  เข้าสู่ระบบ
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
+    </>
+  )
+}
